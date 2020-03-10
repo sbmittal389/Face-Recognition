@@ -2,32 +2,27 @@ import cv2
 import numpy as np
 import os
 
-########## KNN CODE ############
-def distance(v1, v2):
-    # Eucledian 
+def distance(v1, v2): 
     return np.sqrt(((v1-v2)**2).sum())
 
 def knn(train, test, k=5):
     dist = []
     
     for i in range(train.shape[0]):
-        # Get the vector and label
         ix = train[i, :-1]
         iy = train[i, -1]
-        # Compute the distance from test point
+
         d = distance(test, ix)
         dist.append([d, iy])
-    # Sort based on distance and get top k
+        
     dk = sorted(dist, key=lambda x: x[0])[:k]
-    # Retrieve only the labels
     labels = np.array(dk)[:, -1]
     
-    # Get frequencies of each label
+    
     output = np.unique(labels, return_counts=True)
-    # Find max frequency and corresponding label
+    
     index = np.argmax(output[1])
     return output[0][index]
-################################
 
 cam = cv2.VideoCapture(0)
 
@@ -46,7 +41,7 @@ for fx in os.listdir(dataset_path):
         data_item = np.load(dataset_path+fx)
         face_data.append(data_item)
 
-        #Create Labels
+        
         target = class_id*np.ones((data_item.shape[0],))
         labels.append(target)
         class_id +=1 
@@ -60,7 +55,7 @@ Y = np.concatenate(labels,axis=0)
 print(X.shape)
 print(Y.shape)
 
-#Training Set
+
 trainset = np.concatenate((X,Y.reshape(-1,1)),axis=1)
 
 while True:
@@ -69,8 +64,8 @@ while True:
         print("Something Went Wrong!")
         continue
 
-    key_pressed = cv2.waitKey(1)&0xFF #Bitmasking to get last 8 bits
-    if key_pressed==ord('q'): #ord-->ASCII Value(8 bit)
+    key_pressed = cv2.waitKey(1)&0xFF
+    if key_pressed==ord('q'):
         break
     faces = face_cascade.detectMultiScale(frame,1.3,5)
     if(len(faces)==0):
